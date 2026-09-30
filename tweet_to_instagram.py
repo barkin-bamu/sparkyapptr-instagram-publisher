@@ -101,6 +101,19 @@ def validate(data: dict, expected_date: str) -> None:
         raise ValueError("İçerik doğrulaması başarısız:\n - " + "\n - ".join(errors))
 
 
+def remove_duplicate_categories(data: dict) -> None:
+    """Keep the first source-faithful category when a model repeats a key."""
+    unique = []
+    keys = set()
+    for category in data.get("categories", []):
+        if category.get("key") in keys:
+            print(f"Yinelenen kategori atlandı: {category.get('key')}", file=sys.stderr)
+            continue
+        keys.add(category.get("key"))
+        unique.append(category)
+    data["categories"] = unique
+
+
 def create_content(source: str, date: str, model: str, content_kind: str) -> dict:
     import requests
 
@@ -193,6 +206,7 @@ if __name__ == "__main__":
         print(f"[deneme] {source_path.name}: {len(text)} karakter, kaynak özeti {digest}; API çağrısı yapılmadı.")
         raise SystemExit(0)
     content = create_content(text, date, args.model, args.content_kind)
+    remove_duplicate_categories(content)
     validate(content, date)
     out = args.out or ROOT / "content" / f"{date}.json"
     out.parent.mkdir(parents=True, exist_ok=True)
