@@ -13,9 +13,12 @@
 {% endfor %}
 
 :root{
-  --bg:#0F1626; --card:#172036; --line:rgba(253,247,236,.10);
+  --bg:{{ '#083B47' if theme == 'facts' else '#0F1626' }};
+  --card:{{ '#0D4B57' if theme == 'facts' else '#172036' }};
+  --line:rgba(253,247,236,.10);
   --cream:#FDF7EC; --muted:rgba(253,247,236,.66); --faint:rgba(253,247,236,.38);
-  --coral:#FC6456; --amber:#FFB132;
+  --coral:{{ '#56D7B4' if theme == 'facts' else '#FC6456' }};
+  --amber:{{ '#B8F36B' if theme == 'facts' else '#FFB132' }};
   --accent:{{ accent|default('#FFB132') }};
   --k:1;
 }

@@ -56,6 +56,7 @@ if __name__ == "__main__":
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--formats", default="carousel,reel,story", help="virgülle ayrılmış: carousel,reel,story")
     ap.add_argument("--out-dir", type=Path, help="üretilen medya klasörü; haber/fakt akışlarını ayırmak için")
+    ap.add_argument("--theme", choices=("news", "facts"), default="news")
     a = ap.parse_args()
     today = dt.datetime.now(ZoneInfo("Europe/Istanbul")).date().isoformat()
     path = a.content or ROOT / "content" / f"{today}.json"
@@ -63,7 +64,7 @@ if __name__ == "__main__":
         sys.exit(f"Bugünün içeriği bulunamadı: {path}  (haber agent'ı bu dosyayı üretmeli)")
     validate(path)
     print("1/2 Görseller üretiliyor…")
-    files = render(path, out_dir=a.out_dir)
+    files = render(path, out_dir=a.out_dir, theme=a.theme)
     folder = files[0].parent
     formats = {part.strip() for part in a.formats.split(",") if part.strip()}
     unknown = formats - {"carousel", "reel", "story"}

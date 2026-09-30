@@ -53,9 +53,9 @@ def load(content_path: Path):
     return cfg, data, cats
 
 
-def build_pages(cfg, data, cats):
+def build_pages(cfg, data, cats, theme: str):
     d = dt.date.fromisoformat(data["date"])
-    common = dict(brand_name=cfg["brand_name"], handle=cfg["handle"])
+    common = dict(brand_name=cfg["brand_name"], handle=cfg["handle"], theme=theme)
     total = len(cats) + 2
     pages = [dict(kind="cover", index=1, total=total, cover=data["cover"], categories=cats,
                   date_day=d.day, date_month=AYLAR[d.month - 1],
@@ -68,7 +68,7 @@ def build_pages(cfg, data, cats):
     return pages
 
 
-def render(content_path: Path, out_dir: Path | None = None, keep_png=False) -> list[Path]:
+def render(content_path: Path, out_dir: Path | None = None, keep_png=False, theme: str = "news") -> list[Path]:
     cfg, data, cats = load(content_path)
     out_dir = (out_dir or ROOT / "out" / data["date"]).resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -78,7 +78,7 @@ def render(content_path: Path, out_dir: Path | None = None, keep_png=False) -> l
     with sync_playwright() as p:
         browser = p.chromium.launch()
         page = browser.new_page(viewport={"width": 1080, "height": 1350}, device_scale_factor=1)
-        for pg in build_pages(cfg, data, cats):
+        for pg in build_pages(cfg, data, cats, theme):
             html_str = tpl.render(**pg)
             tmp = ROOT / "_render.html"          # fontlar/logo göreli yoldan yüklensin diye
             tmp.write_text(html_str, encoding="utf-8")
@@ -121,7 +121,8 @@ if __name__ == "__main__":
     ap.add_argument("content", type=Path)
     ap.add_argument("--out", type=Path)
     ap.add_argument("--png", action="store_true")
+    ap.add_argument("--theme", choices=("news", "facts"), default="news")
     a = ap.parse_args()
     if not a.content.exists():
         sys.exit(f"Bulunamadı: {a.content}")
-    render(a.content, a.out, a.png)
+    render(a.content, a.out, a.png, a.theme)
