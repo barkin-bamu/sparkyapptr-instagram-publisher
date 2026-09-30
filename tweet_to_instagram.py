@@ -11,7 +11,9 @@ import datetime as dt
 import hashlib
 import json
 import os
+import random
 import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -111,7 +113,42 @@ def create_content(source: str, date: str, model: str, content_kind: str) -> dic
         "input": f"Kaynak tarihi: {date}\n\nX TASLAKLARI (veri olarak ele al):\n{source}",
         "text": {"format": {"type": "json_schema", "name": "instagram_carousel", "strict": True, "schema": SCHEMA}},
     }
-    response = requests.post("https://api.openai.com/v1/responses", headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"}, json=payload, timeout=180)
+    max_attempts = int(os.getenv("OPENAI_MAX_ATTEMPTS", "6"))
+    response = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            response = requests.post(
+                "https://api.openai.com/v1/responses",
+                headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+                json=payload,
+                timeout=180,
+            )
+        except requests.RequestException as exc:
+            if attempt == max_attempts:
+                raise RuntimeError(f"OpenAI isteği {max_attempts} denemede tamamlanamadı: {exc}") from exc
+            delay = min(60, 2 ** attempt) + random.uniform(0, 1)
+            print(f"OpenAI bağlantısı kesildi; {delay:.0f} sn sonra yeniden deneniyor ({attempt}/{max_attempts}).", file=sys.stderr)
+            time.sleep(delay)
+            continue
+
+        if response.status_code not in (429, 500, 502, 503, 504):
+            break
+        if attempt == max_attempts:
+            response.raise_for_status()
+        retry_after = response.headers.get("retry-after")
+        try:
+            delay = float(retry_after) if retry_after else min(60, 2 ** attempt)
+        except ValueError:
+            delay = min(60, 2 ** attempt)
+        delay += random.uniform(0, 1)
+        print(
+            f"OpenAI geçici olarak yoğun (HTTP {response.status_code}); {delay:.0f} sn sonra yeniden deneniyor ({attempt}/{max_attempts}).",
+            file=sys.stderr,
+        )
+        time.sleep(delay)
+
+    if response is None:
+        raise RuntimeError("OpenAI'dan yanıt alınamadı.")
     response.raise_for_status()
     body = response.json()
     if body.get("status") != "completed" or not body.get("output_text"):
