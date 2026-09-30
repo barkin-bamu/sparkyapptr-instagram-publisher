@@ -88,8 +88,8 @@ def validate(data: dict, expected_date: str) -> None:
         if category.get("headline", "").count("*") != 2:
             errors.append(f"{key}: headline tam bir vurgu içermeli")
         items = category.get("items", [])
-        if len(items) != 2:
-            errors.append(f"{key}: tam iki haber maddesi gerekli")
+        if not 1 <= len(items) <= 2:
+            errors.append(f"{key}: bir veya iki kaynak maddesi gerekli")
         for item in items:
             if len(item.get("lead", "")) > 40 or len(item.get("text", "")) > 90:
                 errors.append(f"{key}: madde karakter sınırını aşıyor")
