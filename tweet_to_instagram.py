@@ -155,9 +155,17 @@ def create_content(source: str, date: str, model: str, content_kind: str) -> dic
         raise RuntimeError("OpenAI'dan yanıt alınamadı.")
     response.raise_for_status()
     body = response.json()
-    if body.get("status") != "completed" or not body.get("output_text"):
+    output_text = body.get("output_text")
+    if not output_text:
+        output_text = "".join(
+            part.get("text", "")
+            for output in body.get("output", [])
+            for part in output.get("content", [])
+            if part.get("type") == "output_text"
+        )
+    if body.get("status") != "completed" or not output_text:
         raise RuntimeError(f"Agent tamamlanmadı: {body.get('status')}")
-    return json.loads(body["output_text"])
+    return json.loads(output_text)
 
 
 if __name__ == "__main__":
