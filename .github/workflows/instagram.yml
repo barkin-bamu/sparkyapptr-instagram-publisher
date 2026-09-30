@@ -2,7 +2,7 @@ name: Tweetlerden Instagram günlük yayın
 
 on:
   schedule:
-    - cron: "45 3 * * *" # 06:45 Türkiye; tweet agent'ından sonra
+    - cron: "15 8 * * *" # 11:15 Türkiye; haber ve ilginç-bilgi tweet agent'larından sonra
   workflow_dispatch:
     inputs:
       dry_run:
