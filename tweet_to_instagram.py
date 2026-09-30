@@ -34,12 +34,12 @@ SCHEMA = {
                 "type": "object",
                 "properties": {
                     "key": {"type": "string", "enum": sorted(ALLOWED)},
-                    "teaser": {"type": "string"}, "headline": {"type": "string"},
+                    "teaser": {"type": "string", "maxLength": 38}, "headline": {"type": "string", "maxLength": 90},
                     "items": {
                         "type": "array",
-                        "items": {"type": "object", "properties": {"lead": {"type": "string"}, "text": {"type": "string"}}, "required": ["lead", "text"], "additionalProperties": False},
+                        "items": {"type": "object", "properties": {"lead": {"type": "string", "maxLength": 40}, "text": {"type": "string", "maxLength": 90}}, "required": ["lead", "text"], "additionalProperties": False},
                     },
-                    "fact": {"type": "string"}, "sources": {"type": "array", "items": {"type": "string"}},
+                    "fact": {"type": "string", "maxLength": 150}, "sources": {"type": "array", "items": {"type": "string"}},
                 },
                 "required": ["key", "teaser", "headline", "items", "fact", "sources"],
                 "additionalProperties": False,
