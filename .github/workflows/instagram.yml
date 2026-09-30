@@ -38,6 +38,8 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - run: python -m playwright install --with-deps chromium
+      - name: Reel video aracını kur
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
       - name: Haberleri dönüştür, üret ve paylaş
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
