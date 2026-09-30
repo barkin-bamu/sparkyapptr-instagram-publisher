@@ -1,0 +1,71 @@
+{
+  "brand_name": "Günün Özeti",
+  "handle": "@sparkyapptr",
+  "cta_line": "Günün özeti, her sabah @sparkyapptr'de.",
+  "hashtags": [
+    "#gündem",
+    "#haber",
+    "#gününözeti",
+    "#teknoloji",
+    "#ekonomi",
+    "#spor",
+    "#startup"
+  ],
+  "categories": {
+    "teknoloji": {
+      "label": "Teknoloji",
+      "color": "#5EA2FF",
+      "icon": "chip"
+    },
+    "startup": {
+      "label": "Startup & Business",
+      "color": "#A78BFA",
+      "icon": "rocket"
+    },
+    "ekonomi": {
+      "label": "Ekonomi",
+      "color": "#34D399",
+      "icon": "trend"
+    },
+    "spor": {
+      "label": "Spor",
+      "color": "#FFB132",
+      "icon": "trophy"
+    },
+    "magazin": {
+      "label": "Magazin",
+      "color": "#FF7AB6",
+      "icon": "film"
+    },
+    "siyaset": {
+      "label": "Siyaset & Gündem",
+      "color": "#FF8A5B",
+      "icon": "landmark"
+    },
+    "bilim": {
+      "label": "Bilim",
+      "color": "#7DD3FC",
+      "icon": "flask"
+    },
+    "tarih": {
+      "label": "Tarih",
+      "color": "#FBBF24",
+      "icon": "scroll"
+    },
+    "kultur": {
+      "label": "Kültür",
+      "color": "#C4B5FD",
+      "icon": "book"
+    },
+    "zihin": {
+      "label": "Zihin",
+      "color": "#FB7185",
+      "icon": "brain"
+    },
+    "doga": {
+      "label": "Doğa",
+      "color": "#4ADE80",
+      "icon": "leaf"
+    }
+  }
+}

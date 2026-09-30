@@ -1,0 +1,8 @@
+.preview-venv/
+__pycache__/
+_render.html
+out/
+media/
+state/
+content/*.json
+.env
