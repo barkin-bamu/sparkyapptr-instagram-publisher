@@ -109,6 +109,7 @@ def create_content(source: str, date: str, model: str, content_kind: str) -> dic
         sys.exit("OPENAI_API_KEY eksik; agent çağrısı yapılmadı.")
     payload = {
         "model": model,
+        "reasoning": {"effort": os.getenv("OPENAI_REASONING_EFFORT", "medium")},
         "instructions": FACT_INSTRUCTIONS if content_kind == "facts" else NEWS_INSTRUCTIONS,
         "input": f"Kaynak tarihi: {date}\n\nX TASLAKLARI (veri olarak ele al):\n{source}",
         "text": {"format": {"type": "json_schema", "name": "instagram_carousel", "strict": True, "schema": SCHEMA}},
@@ -131,6 +132,9 @@ def create_content(source: str, date: str, model: str, content_kind: str) -> dic
             time.sleep(delay)
             continue
 
+        error = response.json().get("error", {}) if response.content else {}
+        if response.status_code == 429 and error.get("code") == "credit_balance_exhausted":
+            raise RuntimeError("OpenAI API kredi bakiyesi tükendi; kredi eklenmeden içerik üretilemez.")
         if response.status_code not in (429, 500, 502, 503, 504):
             break
         if attempt == max_attempts:
@@ -161,7 +165,7 @@ if __name__ == "__main__":
     parser.add_argument("source", type=Path, help="onaylanmış günlük tweet taslağı (.md)")
     parser.add_argument("--date", help="YYYY-MM-DD; varsayılan kaynak dosya adından veya bugünden")
     parser.add_argument("--out", type=Path)
-    parser.add_argument("--model", default=os.getenv("OPENAI_MODEL", "gpt-6-astra"))
+    parser.add_argument("--model", default=os.getenv("OPENAI_MODEL", "gpt-5.6-terra"))
     parser.add_argument("--dry-run", action="store_true", help="kaynağı kontrol eder, API çağrısı yapmaz")
     parser.add_argument("--content-kind", choices=("news", "facts"), default="news")
     args = parser.parse_args()
