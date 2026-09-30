@@ -52,7 +52,9 @@ jobs:
         run: |
           DATE="${{ inputs.source_date || '' }}"
           if [ -z "$DATE" ]; then DATE="$(TZ=Europe/Istanbul date +%F)"; fi
-          python tweet_to_instagram.py "tweet-source/HABER_TWEETLERI_${DATE}.md" --date "$DATE" --content-kind news --out "content/${DATE}-news.json"
+          SOURCE="tweet-source/content/drafts/news-${DATE}.md"
+          if [ ! -f "$SOURCE" ]; then SOURCE="tweet-source/content/drafts/${DATE}.md"; fi
+          python tweet_to_instagram.py "$SOURCE" --date "$DATE" --content-kind news --out "content/${DATE}-news.json"
           python run_daily.py "content/${DATE}-news.json" --out-dir "out/${DATE}-news" ${{ inputs.dry_run && '--dry-run' || '' }}
       - name: İlginç bilgileri dönüştür, üret ve paylaş
         env:
@@ -68,8 +70,7 @@ jobs:
         run: |
           DATE="${{ inputs.source_date || '' }}"
           if [ -z "$DATE" ]; then DATE="$(TZ=Europe/Istanbul date +%F)"; fi
-          SOURCE="tweet-source/ILGINC_BILGI_TWEETLERI_${DATE}_GUNCEL.md"
-          if [ ! -f "$SOURCE" ]; then SOURCE="tweet-source/ILGINC_BILGI_TWEETLERI_${DATE}.md"; fi
+          SOURCE="tweet-source/curiosities/${DATE}.md"
           python tweet_to_instagram.py "$SOURCE" --date "$DATE" --content-kind facts --out "content/${DATE}-facts.json"
           python run_daily.py "content/${DATE}-facts.json" --out-dir "out/${DATE}-facts" ${{ inputs.dry_run && '--dry-run' || '' }}
       - uses: actions/upload-artifact@v4
