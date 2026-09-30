@@ -70,7 +70,7 @@ def build_pages(cfg, data, cats):
 
 def render(content_path: Path, out_dir: Path | None = None, keep_png=False) -> list[Path]:
     cfg, data, cats = load(content_path)
-    out_dir = out_dir or ROOT / "out" / data["date"]
+    out_dir = (out_dir or ROOT / "out" / data["date"]).resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
     env = Environment(loader=FileSystemLoader(ROOT / "templates"), autoescape=True)
     tpl = env.get_template("slide.html.j2")
