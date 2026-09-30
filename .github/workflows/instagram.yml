@@ -55,6 +55,10 @@ jobs:
         run: |
           DATE="${{ inputs.source_date || '' }}"
           if [ -z "$DATE" ]; then DATE="$(TZ=Europe/Istanbul date +%F)"; fi
+          if [ -f "state/${DATE}-news-carousel.json" ]; then
+            echo "Haber paketi bugün zaten yayınlandı; atlanıyor."
+            exit 0
+          fi
           SOURCE="tweet-source/content/drafts/news-${DATE}.md"
           if [ ! -f "$SOURCE" ]; then SOURCE="tweet-source/content/drafts/${DATE}.md"; fi
           python tweet_to_instagram.py "$SOURCE" --date "$DATE" --content-kind news --out "content/${DATE}-news.json"
@@ -74,6 +78,10 @@ jobs:
         run: |
           DATE="${{ inputs.source_date || '' }}"
           if [ -z "$DATE" ]; then DATE="$(TZ=Europe/Istanbul date +%F)"; fi
+          if [ -f "state/${DATE}-facts-carousel.json" ]; then
+            echo "İlginç bilgiler paketi bugün zaten yayınlandı; atlanıyor."
+            exit 0
+          fi
           SOURCE="tweet-source/curiosities/${DATE}.md"
           python tweet_to_instagram.py "$SOURCE" --date "$DATE" --content-kind facts --out "content/${DATE}-facts.json"
           python run_daily.py "content/${DATE}-facts.json" --out-dir "out/${DATE}-facts" ${{ inputs.dry_run && '--dry-run' || '' }}
