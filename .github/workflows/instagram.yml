@@ -3,7 +3,6 @@ name: Tweetlerden Instagram günlük yayın
 on:
   schedule:
     - cron: "15 8 * * *" # 11:15 Türkiye; haber ve ilginç-bilgi tweet agent'larından sonra
-    - cron: "45 8 * * *" # yedek tetikleyici; yayın günlüğü çift paylaşımı engeller
   workflow_dispatch:
     inputs:
       dry_run:
