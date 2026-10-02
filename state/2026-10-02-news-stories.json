@@ -1,8 +1,7 @@
 {
   "date": "2026-10-02-news",
   "kind": "stories",
-  "status": "failed",
-  "content_sha256": "1c8e0c2374bc113ce1b4fbbd02a4161718a6a20ef3ab1a88c7716ac16a6649d4",
-  "media_id": null,
-  "error": "Instagram API hatası (17841424505519356/media_publish): {'message': 'The requested resource does not exist', 'type': 'OAuthException', 'code': 24, 'error_subcode': 2207006, 'is_transient': False, 'error_user_title': 'Media Not Found', 'error_user_msg': 'The media with 18,120,010,663,816,851 cannot be found.', 'fbtrace_id': 'ASidVJJ0AxjyOjc0S_9zRdo'}"
+  "status": "prepared",
+  "content_sha256": "c907e6f8d52518e3875bd751b8d83619bdb987245b09ce9e8f7c908b2bc19e65",
+  "media_id": null
 }
