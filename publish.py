@@ -114,13 +114,21 @@ def start_ledger(files: list[Path], caption: str, date: str, kind: str):
         raise RuntimeError("Günlük otomatik yayın için PUBLISH_LEDGER=github gerekli.")
     existing = ledger_get(date, kind)
     if existing:
-        record, _ = existing
-        raise RuntimeError(f"{date} için mevcut {kind} yayın kaydı var ({record.get('status')}); çift paylaşım engellendi.")
+        record, sha = existing
+        if record.get("status") == "published":
+            print(f"  · {kind} bugün zaten yayınlandı; atlanıyor.")
+            return None, None
+        # Instagram'ın Media Not Found yanıtı, creation_id'nin yayınlanmadığını
+        # kesin olarak gösterir. Bu durumda yalnızca eksik biçimi yeniden kurmak güvenlidir.
+        if record.get("status") == "failed" and "Media Not Found" in record.get("error", ""):
+            print(f"  · başarısız {kind} yeniden hazırlanıyor.")
+        else:
+            raise RuntimeError(f"{date} için mevcut {kind} yayın kaydı var ({record.get('status')}); çift paylaşım engellendi.")
     digest = hashlib.sha256(caption.encode("utf-8"))
     for file in files:
         digest.update(file.read_bytes())
     record = {"date": date, "kind": kind, "status": "prepared", "content_sha256": digest.hexdigest(), "media_id": None}
-    return record, ledger_put(date, kind, record)
+    return record, ledger_put(date, kind, record, sha if existing else None)
 
 
 # ---------------------------------------------------------------- instagram
@@ -172,6 +180,8 @@ def publish_folder(folder: Path, dry_run=False) -> str | None:
         print(f"[deneme] {len(files)} görsel, açıklama {len(caption)} karakter — paylaşılmadı.")
         return None
     record, ledger_sha = start_ledger(files, caption, date, "carousel")
+    if record is None:
+        return None
     host = HOSTS[os.getenv("HOSTING", "github")]
     try:
         urls = host(files, date)
@@ -196,6 +206,8 @@ def publish_single(folder: Path, filename: str, media_type: str, caption: str, d
         print(f"[deneme] {kind}: {file.name} — paylaşılmadı.")
         return None
     record, ledger_sha = start_ledger([file], caption, date, kind)
+    if record is None:
+        return None
     try:
         url = HOSTS[os.getenv("HOSTING", "github")]([file], date)[0]
         container = ig("POST", f"{env('IG_USER_ID')}/media", media_type=media_type,
