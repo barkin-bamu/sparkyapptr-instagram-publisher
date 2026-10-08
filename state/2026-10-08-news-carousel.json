@@ -1,7 +1,8 @@
 {
   "date": "2026-10-08-news",
   "kind": "carousel",
-  "status": "prepared",
+  "status": "failed",
   "content_sha256": "3a94b8bfbb1c48427ab16a96886d4d72b54354cef07f23b76565ba36fbfca8d1",
-  "media_id": null
+  "media_id": null,
+  "error": "Instagram API hatası (17841424505519356/media_publish): {'message': 'Application request limit reached', 'type': 'OAuthException', 'is_transient': False, 'code': 4, 'error_subcode': 2207051, 'error_user_title': 'action is blocked', 'error_user_msg': 'We restrict certain activity to protect our community. Tell us if you think we made a mistake.', 'fbtrace_id': 'Axg0mOI35WeN2d3kV9XC5Km'}"
 }
